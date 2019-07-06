@@ -4,14 +4,17 @@ cc_library(
     visibility = ["//visibility:public"],
     
     includes = [ "." ],
-    hdrs = glob(["*.h"]),
+    hdrs = glob(["**/*.h"]),
 )
 
 cc_import(
     name = "skia_bin",
     visibility = ["//visibility:public"],
 
-    static_library = "skia_static.lib",
+    static_library = select({
+        "@bazel_tools//src/conditions:windows": "skia_static.lib",
+        "//conditions:default": "libskia.a",
+    }),
     interface_library = "skia.lib",
     shared_library = "skia.dll",
 )
@@ -29,6 +32,16 @@ cc_library(
         "@bazel_tools//src/conditions:windows": [
             "-DEFAULTLIB:Opengl32.lib"
         ],
-        "//conditions:default": [],
+        "//conditions:default": [
+            "-lGL",
+            "-lz",
+            "-lpng",
+            "-ljpeg",
+            "-lwebp",
+            "-lwebpmux",
+            "-lwebpdemux",
+            "-lfreetype",
+            "-lfontconfig",
+        ],
     }),
 )
