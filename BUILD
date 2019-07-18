@@ -13,6 +13,7 @@ cc_import(
 
     static_library = select({
         "@bazel_tools//src/conditions:windows": "skia_static.lib",
+        "@bazel_tools//src/conditions:darwin": "macos/libskia.a",
         "//conditions:default": "libskia.a",
     }),
     interface_library = "skia.lib",
@@ -31,6 +32,11 @@ cc_library(
     linkopts = [ ] + select({
         "@bazel_tools//src/conditions:windows": [
             "-DEFAULTLIB:Opengl32.lib"
+        ],
+        "@bazel_tools//src/conditions:darwin": [
+            "-framework CoreText",
+            "-framework CoreServices",
+            "-framework CoreGraphics"
         ],
         "//conditions:default": [
             "-lGL",
